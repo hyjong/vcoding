@@ -1,190 +1,269 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>심플 타이머</title>
-    <style>
-        body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
-        }
-        .timer-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            width: 360px;
-        }
-        .timer-display {
-            font-size: 54px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            font-variant-numeric: tabular-nums;
-            color: #2c3e50;
-        }
-        .btn-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .preset-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .control-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        button {
-            padding: 12px 15px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-adjust {
-            background-color: #ebf3fe;
-            color: #3182ce;
-        }
-        .btn-adjust:hover {
-            background-color: #deeafc;
-        }
-        .btn-preset {
-            background-color: #f1f3f5;
-            color: #495057;
-            font-size: 14px;
-        }
-        .btn-preset:hover {
-            background-color: #e9ecef;
-        }
-        .btn-start {
-            background-color: #2f855a;
-            color: white;
-            grid-column: span 1;
-        }
-        .btn-start:hover {
-            background-color: #276749;
-        }
-        .btn-pause {
-            background-color: #dd6b20;
-            color: white;
-        }
-        .btn-pause:hover {
-            background-color: #c05621;
-        }
-        .btn-reset {
-            background-color: #e53e3e;
-            color: white;
-        }
-        .btn-reset:hover {
-            background-color: #9b2c2c;
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>Kirby Circle Piano</title>
+
+<style>
+body {
+ margin: 0;
+ height: 100vh;
+ background: #eef2ff;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ flex-direction: column;
+ overflow: hidden;
+ font-family: sans-serif;
+}
+
+h3 {
+ margin-bottom: 20px;
+}
+
+/* 🎹 피아노 /
+#piano {
+ display: flex;
+ gap: 10px;
+}
+
+/ 🩷 완전 원형 커비 /
+.key {
+ width: 80px;
+ height: 80px; / ✔ 핵심: 정사각형 /
+ background: #ff8fc6;
+ border-radius: 50%; / ✔ 완전 원 /
+ position: relative;
+ box-shadow: inset -6px -6px 0 rgba(0,0,0,0.08);
+ transition: transform 0.12s;
+}
+
+/ 눈 (중앙 기준) /
+.eye {
+ position: absolute;
+ width: 8px;
+ height: 12px;
+ background: #1a1a1a;
+ border-radius: 50%;
+ top: 28px;
+}
+
+.eye.left { left: 22px; }
+.eye.right { right: 22px; }
+
+/ 볼 /
+.blush {
+ position: absolute;
+ width: 10px;
+ height: 6px;
+ background: #ff5fa2;
+ border-radius: 50%;
+ bottom: 18px;
+}
+
+.blush.left { left: 18px; }
+.blush.right { right: 18px; }
+
+/ 🔨 망치 /
+#hammer {
+ position: absolute;
+ font-size: 50px;
+ top: -120px;
+ opacity: 0;
+ transition: 0.1s;
+ pointer-events: none;
+}
+
+/ 짜부 /
+.squish {
+ transform: scale(1.25, 0.35);
+}
+
+/ 💥 폭발 /
+.explode {
+ animation: explode 0.35s ease forwards;
+}
+
+@keyframes explode {
+ 0% { transform: scale(1); }
+ 40% { transform: scale(0.2); }
+ 100% { transform: scale(0); opacity: 0; }
+}
+
+/ ⭐ 별 /
+.star {
+ position: absolute;
+ font-size: 18px;
+ animation: starFly 0.8s ease-out forwards;
+}
+
+@keyframes starFly {
+ 0% { transform: translate(0,0) scale(1); opacity: 1; }
+ 100% { transform: translate(var(--x), var(--y)) scale(0.5); opacity: 0; }
+}
+
+</style>
 </head>
+
 <body>
 
-<div class="timer-container">
-    <div class="timer-display" id="display">00:00</div>
-    
-    <!-- +, - 5초 조절 버튼 -->
-    <div class="btn-group">
-        <button class="btn-adjust" onclick="adjustTime(-5)">- 5초</button>
-        <button class="btn-adjust" onclick="adjustTime(5)">+ 5초</button>
-    </div>
-    
-    <!-- 1분, 5분, 10분 버튼 -->
-    <div class="preset-group">
-        <button class="btn-preset" onclick="addPreset(1)">1분</button>
-        <button class="btn-preset" onclick="addPreset(5)">5분</button>
-        <button class="btn-preset" onclick="addPreset(10)">10분</button>
-    </div>
-    
-    <!-- 시작 / 정지 / 초기화 제어 버튼 -->
-    <div class="control-group">
-        <button class="btn-start" id="startPauseBtn" onclick="toggleStartPause()">시작</button>
-        <button class="btn-reset" onclick="resetTimer()">초기화</button>
-    </div>
-</div>
+<h3>1~9 = 음 / 0 = 💥 폭발 (완전 원형 커비)</h3>
+
+<div id="piano"></div>
+<div id="hammer">🔨</div>
 
 <script>
-    let totalSeconds = 0;
-    let timerInterval = null;
-    let isRunning = false;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    const displayElement = document.getElementById('display');
-    const startPauseBtn = document.getElementById('startPauseBtn');
+// 🎵 음계
+const notes = {
+ 1: 261.63,
+ 2: 293.66,
+ 3: 329.63,
+ 4: 349.23,
+ 5: 392.00,
+ 6: 440.00,
+ 7: 493.88,
+ 8: 523.25,
+ 9: 587.33
+};
 
-    function updateDisplay() {
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        displayElement.textContent = 
-            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
+function playTone(freq) {
+ const osc = audioCtx.createOscillator();
+ const gain = audioCtx.createGain();
 
-    function adjustTime(amount) {
-        totalSeconds += amount;
-        if (totalSeconds < 0) totalSeconds = 0;
-        updateDisplay();
-    }
+ osc.type = "square";
+ osc.frequency.value = freq;
 
-    function addPreset(minutes) {
-        totalSeconds += minutes * 60;
-        updateDisplay();
-    }
+ gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+ gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
 
-    function toggleStartPause() {
-        if (isRunning) {
-            // 일시정지
-            clearInterval(timerInterval);
-            startPauseBtn.textContent = '시작';
-            startPauseBtn.className = 'btn-start';
-            isRunning = false;
-        } else {
-            // 시작
-            if (totalSeconds <= 0) return; // 시간이 0이면 시작 안 함
-            
-            timerInterval = setInterval(() => {
-                if (totalSeconds > 0) {
-                    totalSeconds--;
-                    updateDisplay();
-                } else {
-                    clearInterval(timerInterval);
-                    alert('타이머가 종료되었습니다!');
-                    resetTimer();
-                }
-            }, 1000);
-            
-            startPauseBtn.textContent = '일시정지';
-            startPauseBtn.className = 'btn-pause';
-            isRunning = true;
-        }
-    }
+ osc.connect(gain);
+ gain.connect(audioCtx.destination);
 
-    function resetTimer() {
-        clearInterval(timerInterval);
-        totalSeconds = 0;
-        isRunning = false;
-        startPauseBtn.textContent = '시작';
-        startPauseBtn.className = 'btn-start';
-        updateDisplay();
-    }
+ osc.start();
+ osc.stop(audioCtx.currentTime + 0.25);
+}
 
-    // 초기 디스플레이 설정
-    updateDisplay();
+// 💥 폭발 사운드
+function explodeSound() {
+ const bufferSize = audioCtx.sampleRate  0.25;
+ const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+ const data = buffer.getChannelData(0);
+
+ for (let i = 0; i < bufferSize; i++) {
+ data[i] = (Math.random()  2 - 1)  (1 - i / bufferSize);
+ }
+
+ const noise = audioCtx.createBufferSource();
+ noise.buffer = buffer;
+
+ const filter = audioCtx.createBiquadFilter();
+ filter.type = "lowpass";
+ filter.frequency.value = 900;
+
+ const gain = audioCtx.createGain();
+ gain.gain.value = 1.5;
+
+ noise.connect(filter);
+ filter.connect(gain);
+ gain.connect(audioCtx.destination);
+
+ noise.start();
+}
+
+// 🎹 생성
+const piano = document.getElementById("piano");
+const hammer = document.getElementById("hammer");
+
+let keys = [];
+
+for (let i = 1; i <= 9; i++) keys.push(createKey(i));
+keys.push(createKey(0));
+
+function createKey(num) {
+ const key = document.createElement("div");
+ key.className = "key";
+ key.dataset.num = num;
+
+ key.innerHTML = `
+ <div class="eye left"></div>
+ <div class="eye right"></div>
+ <div class="blush left"></div>
+ <div class="blush right"></div>
+ `;
+
+ key.addEventListener("click", () => hit(num, key));
+ piano.appendChild(key);
+
+ return key;
+}
+
+// ⭐ 별
+function spawnStars(x, y) {
+ for (let i = 0; i < 10; i++) {
+ const star = document.createElement("div");
+ star.className = "star";
+ star.innerText = "⭐";
+
+ const angle = Math.random()  Math.PI  2;
+ const dist = 100 + Math.random()  60;
+
+ star.style.left = x + "px";
+ star.style.top = y + "px";
+ star.style.setProperty("--x", Math.cos(angle)  dist + "px");
+ star.style.setProperty("--y", Math.sin(angle) * dist + "px");
+
+ document.body.appendChild(star);
+
+ setTimeout(() => star.remove(), 800);
+ }
+}
+
+// 🔨 hit
+function hit(num, el) {
+ audioCtx.resume();
+
+ const rect = el.getBoundingClientRect();
+
+ hammer.style.left = rect.left + rect.width/2 + "px";
+ hammer.style.top = rect.top - 90 + "px";
+ hammer.style.opacity = 1;
+ hammer.style.transform = "translateY(120px)";
+
+ setTimeout(() => {
+ hammer.style.transform = "translateY(0px)";
+ hammer.style.opacity = 0;
+ }, 120);
+
+ // 💥 0 = 폭발
+ if (num === 0) {
+ const center = keys[9];
+ const r = center.getBoundingClientRect();
+
+ center.classList.add("explode");
+ explodeSound();
+ spawnStars(r.left + 40, r.top + 40);
+
+ setTimeout(() => center.classList.remove("explode"), 350);
+ return;
+ }
+
+ // 🎵 일반
+ playTone(notes[num]);
+ el.classList.add("squish");
+
+ setTimeout(() => el.classList.remove("squish"), 120);
+}
+
+// ⌨️ 키보드
+document.addEventListener("keydown", (e) => {
+ if (e.key >= "0" && e.key <= "9") {
+ const num = Number(e.key);
+ const el = keys.find(k => Number(k.dataset.num) === num);
+ if (el) hit(num, el);
+ }
+});
 </script>
 
 </body>
