@@ -80,7 +80,7 @@
 
 <div class="box">
 
-  <h2>🧪 원소 기호 퀴즈</h2>
+  <h2>🧪 랜덤 원소 퀴즈</h2>
 
   <p id="question"></p>
 
@@ -104,45 +104,33 @@
 
 <script>
 
-let quiz = [
+const originalQuiz = [
 
-  { name:"수소", symbol:"H", hint:"알파벳 1글자" },
+  { name:"수소", symbol:"H", hint:"가장 가벼운 원소" },
 
-  { name:"헬륨", symbol:"He", hint:"알파벳 2글자" },
+  { name:"헬륨", symbol:"He", hint:"풍선에 쓰임" },
 
-  { name:"탄소", symbol:"C", hint:"3획 느낌의 간단한 문자" },
+  { name:"탄소", symbol:"C", hint:"생명체의 기본" },
 
-  { name:"질소", symbol:"N", hint:"지그재그 느낌의 한 글자" },
+  { name:"질소", symbol:"N", hint:"공기의 대부분" },
 
-  { name:"산소", symbol:"O", hint:"동그라미 모양 문자" },
+  { name:"산소", symbol:"O", hint:"호흡 필수" },
 
-  { name:"나트륨", symbol:"Na", hint:"대문자 + 소문자 조합" },
+  { name:"나트륨", symbol:"Na", hint:"소금 구성" },
 
-  { name:"칼륨", symbol:"K", hint:"직선 느낌 한 글자" },
+  { name:"칼륨", symbol:"K", hint:"신경 기능" },
 
-  { name:"철", symbol:"Fe", hint:"두 글자지만 첫 글자 F" },
+  { name:"철", symbol:"Fe", hint:"혈액 관련" },
 
-  { name:"구리", symbol:"Cu", hint:"C로 시작하는 두 글자" },
+  { name:"구리", symbol:"Cu", hint:"전선 재료" },
 
-  { name:"은", symbol:"Ag", hint:"A로 시작하는 두 글자" }
+  { name:"은", symbol:"Ag", hint:"귀금속" }
 
 ];
 
-let originalQuiz = [...quiz];
+let quiz = [];
 
-function shuffle(arr){
-
-  for(let i = arr.length - 1; i > 0; i--){
-
-    let j = Math.floor(Math.random() * (i + 1));
-
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-
-  }
-
-}
-
-let index = 0;
+let current = null;
 
 let score = 0;
 
@@ -158,19 +146,85 @@ const input = document.getElementById("answer");
 
 const restartBtn = document.getElementById("restartBtn");
 
-function startGame(){
+// 배열에서 랜덤 1개 뽑고 제거
+
+function getRandomQuestion(){
+
+  if(quiz.length === 0) return null;
+
+  const idx = Math.floor(Math.random() * quiz.length);
+
+  return quiz.splice(idx, 1)[0];
+
+}
+
+function showQuestion(){
+
+  current = getRandomQuestion();
+
+  if(!current){
+
+    q.textContent = "🎉 퀴즈 완료!";
+
+    hint.textContent = "";
+
+    result.textContent = "";
+
+    scoreText.textContent = `🎯 최종 점수: ${score}/${originalQuiz.length}`;
+
+    restartBtn.style.display = "inline-block";
+
+    return;
+
+  }
+
+  q.textContent = `${current.name}의 원소 기호는?`;
+
+  hint.textContent = "";
+
+}
+
+function checkAnswer(){
+
+  let user = input.value.trim();
+
+  if(user.toLowerCase() === current.symbol.toLowerCase()){
+
+    result.textContent = "✔ 정답!";
+
+    score++;
+
+  } else {
+
+    result.textContent = `✘ 오답! 정답은 ${current.symbol}`;
+
+  }
+
+  input.value = "";
+
+  scoreText.textContent = `점수: ${score}`;
+
+  showQuestion();
+
+}
+
+function showHint(){
+
+  if(current){
+
+    hint.textContent = "💡 힌트: " + current.hint;
+
+  }
+
+}
+
+function restartGame(){
 
   quiz = [...originalQuiz];
-
-  shuffle(quiz);
-
-  index = 0;
 
   score = 0;
 
   result.textContent = "";
-
-  hint.textContent = "";
 
   scoreText.textContent = "";
 
@@ -180,67 +234,13 @@ function startGame(){
 
 }
 
-function showQuestion(){
+function startGame(){
 
-  if(index < quiz.length){
+  quiz = [...originalQuiz];
 
-    q.textContent = `${quiz[index].name}의 원소 기호는?`;
-
-  } else {
-
-    q.textContent = "🎉 퀴즈 종료!";
-
-    result.textContent = "";
-
-    hint.textContent = "";
-
-    scoreText.textContent = `🎯 최종 점수: ${score}/${quiz.length}`;
-
-    restartBtn.style.display = "inline-block";
-
-  }
-
-}
-
-function checkAnswer(){
-
-  let user = input.value.trim();
-
-  if(user.toLowerCase() === quiz[index].symbol.toLowerCase()){
-
-    result.textContent = "✔ 정답!";
-
-    score++;
-
-  } else {
-
-    result.textContent = `✘ 오답! 정답은 ${quiz[index].symbol}`;
-
-  }
-
-  index++;
-
-  input.value = "";
+  score = 0;
 
   showQuestion();
-
-  scoreText.textContent = `점수: ${score}`;
-
-}
-
-function showHint(){
-
-  if(index < quiz.length){
-
-    hint.textContent = "💡 힌트: " + quiz[index].hint;
-
-  }
-
-}
-
-function restartGame(){
-
-  startGame();
 
 }
 
