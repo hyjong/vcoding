@@ -3,189 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>심플 타이머</title>
+    <title>포세이큰 마스터 클래스 테스트 v2</title>
     <style>
+        :root {
+            --bg-color: #060713;
+            --panel-bg: #111329;
+            --accent-cyan: #00f2ff;
+            --accent-purple: #7000ff;
+            --text-main: #ffffff;
+            --text-muted: #8b8ea8;
+            --correct: #00ff88;
+            --wrong: #ff0055;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+        }
+
         body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background-color: #f4f6f9;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
+            min-height: 100vh;
+            padding: 20px;
         }
-        .timer-container {
-            background-color: #ffffff;
-            padding: 40px;
+
+        .quiz-wrapper {
+            background-color: var(--panel-bg);
+            border: 2px solid #222547;
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            width: 360px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            width: 100%;
+            max-width: 750px;
+            padding: 40px;
+            position: relative;
         }
-        .timer-display {
-            font-size: 54px;
+
+        .header-title {
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 25px;
-            font-variant-numeric: tabular-nums;
-            color: #2c3e50;
+            color: var(--accent-cyan);
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
         }
-        .btn-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+
+        .screen {
+            display: none;
         }
-        .preset-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
+
+        .screen.active {
+            display: block;
         }
-        .control-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+
+        .desc-text {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 15px;
+            line-height: 1.6;
         }
-        button {
-            padding: 12px 15px;
+
+        .form-label {
+            display: block;
             font-size: 16px;
-            font-weight: 600;
+            color: #c1c5e0;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            background-color: #0a0b18;
+            border: 1px solid var(--accent-purple);
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, var(--accent-purple), #9033ff);
+            color: white;
             border: none;
             border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: 0.3s;
         }
-        .btn-adjust {
-            background-color: #ebf3fe;
-            color: #3182ce;
+
+        .btn-action:hover {
+            box-shadow: 0 0 25px rgba(112, 0, 255, 0.6);
+            transform: translateY(-2px);
         }
-        .btn-adjust:hover {
-            background-color: #deeafc;
+
+        .quiz-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #222547;
+            padding-bottom: 15px;
         }
-        .btn-preset {
-            background-color: #f1f3f5;
-            color: #495057;
-            font-size: 14px;
+
+        .progress-indicator {
+            font-size: 16px;
+            color: var(--text-muted);
         }
-        .btn-preset:hover {
-            background-color: #e9ecef;
+
+        .timer-box {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--accent-cyan);
+            background: rgba(0, 242, 255, 0.1);
+            padding: 5px 18px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-cyan);
         }
-        .btn-start {
-            background-color: #2f855a;
-            color: white;
-            grid-column: span 1;
+
+        .timer-box.warning {
+            color: var(--wrong);
+            border-color: var(--wrong);
+            background: rgba(255, 0, 85, 0.1);
+            animation: blinker 1s linear infinite;
         }
-        .btn-start:hover {
-            background-color: #276749;
+
+        @keyframes blinker {
+            50% { opacity: 0.5; }
         }
-        .btn-pause {
-            background-color: #dd6b20;
-            color: white;
+
+        .question-display {
+            font-size: 22px;
+            line-height: 1.6;
+            margin-bottom: 35px;
+            font-weight: bold;
         }
-        .btn-pause:hover {
-            background-color: #c05621;
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-        .btn-reset {
-            background-color: #e53e3e;
-            color: white;
+
+        .option-card {
+            background-color: #171a36;
+            border: 1px solid #2c305e;
+            padding: 18px;
+            border-radius: 10px;
+            text-align: left;
+            color: var(--text-main);
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .btn-reset:hover {
-            background-color: #9b2c2c;
+
+        .option-card:hover {
+            border-color: var(--accent-cyan);
+            background-color: rgba(0, 242, 255, 0.05);
+        }
+
+        .option-card.correct-pick {
+            background-color: rgba(0, 255, 136, 0.2) !important;
+            border-color: var(--correct) !important;
+            color: var(--correct) !important;
+            font-weight: bold;
+        }
+
+        .option-card.wrong-pick {
+            background-color: rgba(255, 0, 85, 0.2) !important;
+            border-color: var(--wrong) !important;
+            color: var(--wrong) !important;
+        }
+
+        .option-card.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .cryptic-hint-box {
+            margin-top: 30px;
+            padding: 16px;
+            background-color: #0b0c16;
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 4px;
+            font-size: 15px;
+            color: #a6f6ff;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .result-score {
+            font-size: 56px;
+            color: var(--accent-cyan);
+            text-align: center;
+            font-weight: bold;
+            margin: 25px 0;
+        }
+
+        .result-eval {
+            font-size: 18px;
+            text-align: center;
+            color: #d1d5db;
+            line-height: 1.7;
+            margin-bottom: 35px;
+            background-color: #0b0c16;
+            padding: 20px;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
 
-<div class="timer-container">
-    <div class="timer-display" id="display">00:00</div>
-    
-    <!-- +, - 5초 조절 버튼 -->
-    <div class="btn-group">
-        <button class="btn-adjust" onclick="adjustTime(-5)">- 5초</button>
-        <button class="btn-adjust" onclick="adjustTime(5)">+ 5초</button>
+    <div class="quiz-wrapper">
+        <div class="header-title">FORSAKEN 고수 전용 지식 검증 시스템</div>
+
+        <!-- 메인 세팅 화면 -->
+        <div id="setup-screen" class="screen active">
+            <div class="desc-text">
+                이미 포세이큰의 생리를 완벽히 파악한 고수 전용 시스템입니다.<br>
+                애저, 엘리엇, 원엑스(1X)를 포함하여 중복 없이 무작위 출제됩니다.
+            </div>
+
+            <label class="form-label" for="count-select">문제 개수 선택</label>
+            <select id="count-select">
+                <option value="10">10 문제</option>
+                <option value="20">20 문제</option>
+                <option value="30">30 문제</option>
+                <option value="40">40 문제</option>
+                <option value="50">50 문제</option>
+                <option value="60">60 문제</option>
+                <option value="70">70 문제</option>
+                <option value="80">80 문제</option>
+                <option value="90">90 문제</option>
+                <option value="100">100 문제 (최종 마스터 코스)</option>
+            </select>
+
+            <button class="btn-action" onclick="beginAssessment()">검증 시작</button>
+        </div>
+
+        <!-- 퀴즈 화면 -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-top-bar">
+                <div class="progress-indicator" id="progress-indicator">문제 1 / 10</div>
+                <div class="timer-box" id="timer-box">10초</div>
+            </div>
+            <div class="question-display" id="question-display">문제를 불러오는 중입니다...</div>
+            <div class="options-container" id="options-container"></div>
+            <div class="cryptic-hint-box" id="cryptic-hint-box">💡 오묘한 힌트: ...</div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div id="result-screen" class="screen">
+            <div class="header-title" style="font-size: 22px;">최종 검증 완료 보고서</div>
+            <div class="result-score" id="result-score">0 / 10</div>
+            <div class="result-eval" id="result-eval">분석 데이터 연산 중...</div>
+            <button class="btn-action" onclick="restartSystem()">시스템 재구동</button>
+        </div>
     </div>
-    
-    <!-- 1분, 5분, 10분 버튼 -->
-    <div class="preset-group">
-        <button class="btn-preset" onclick="addPreset(1)">1분</button>
-        <button class="btn-preset" onclick="addPreset(5)">5분</button>
-        <button class="btn-preset" onclick="addPreset(10)">10분</button>
-    </div>
-    
-    <!-- 시작 / 정지 / 초기화 제어 버튼 -->
-    <div class="control-group">
-        <button class="btn-start" id="startPauseBtn" onclick="toggleStartPause()">시작</button>
-        <button class="btn-reset" onclick="resetTimer()">초기화</button>
-    </div>
-</div>
 
-<script>
-    let totalSeconds = 0;
-    let timerInterval = null;
-    let isRunning = false;
+    <script>
+        const MASTER_DATABASE = [
+            { q: "신규 살인마 애저(Azurewrath)의 고유 시스템인 '봉헌' 자원은 생존자에게 평타 피해를 주었을 때 외에 어떤 방식으로 추가 수급이 가능합니까?", a: ["개화한 구체 함정 발동", "캐비닛 수색 완료", "생존자 달리기 게이지 소모", "발전기 수리 폭발 유도"], c: 0, h: "보라색 꽃이 활짝 피어나는 조건과 깊은 연관이 있습니다." },
+            { q: "애저의 특수 패시브인 '울음'은 상처 입은 생존자(체력 100 미만)를 기본 공격할 때 피해량이 얼마나 경감되어 적용됩니까?", a: ["5 피해량 감소", "10 피해량 감소", "15 피해량 감소", "피해량 감소 없음"], c: 0, h: "매우 소량의 한 자리 숫자만큼 수치상 자비를 베꿉니다." },
+            { q: "4차원의 균열에서 찾아온 살인마 원엑스(1x1x1x1)가 사용하는 전용 무기 '데몬스생크'에 타격당한 생존자가 얻는 고유 디버프 상태는 무엇입니까?", a: ["오류 코드 주입 상태", "깊은 상흔 상태", "출혈 격화 상태", "공포의 시야 제한 상태"], c: 0, h: "해킹과 시스템 오작동을 유발하는 단어를 떠올려 보십시오." },
+            { q: "지원가형 생존자 엘리엇(Elliot)이 피자 투척 기술을 성공적으로 명중시켰을 때, 아군 생존자가 즉시 회복하는 순수 체력(HP) 수치는 얼마입니까?", a: ["35 체력", "25 체력", "50 체력", "15 체력"], c: 0, h: "반토막의 체력보다는 작고, 미미한 수치보다는 확실히 높은 서포팅 값입니다." },
+            { q: "엘리엇의 고유 패시브 '배달원의 의지'는 반경 내의 아군이 최소 몇 이상의 큰 피해를 입었을 때 아우라를 노출시켜 위치를 공유합니까?", a: ["15 피해량 이상", "5 피해량 이상", "30 피해량 이상", "40 피해량 이상"], c: 0, h: "어설픈 찰과상이 아닌, 확연하게 타격을 입었다고 판단되는 기준선입니다." },
+            { q: "살인마 캐릭터가 추격 중이 아닐 때, 생존자와의 거리가 몇 스터드 이상 멀어져야 달리기 스태미나 소모가 완전히 정지됩니까?", a: ["85 스터드 이상", "50 스터드 이상", "70 스터드 이상", "130 스터드 이상"], c: 0, h: "일반적인 추격 판정이 완전히 끊기는 초원거리 수치입니다." },
+            { q: "생존자가 높은 지형이나 난간에서 낙하할 때, 살인마와 대조적으로 확실하게 적용받는 결정적인 움직임 제약 시스템은 무엇입니까?", a: ["착지 순간의 일시적 이동 제한", "낙하 충격으로 인한 강제 출혈", "일정 시간 시야 각도 축소", "달리기 게이지 즉시 완전 증발"], c: 0, h: "중력을 거스른 대가로 다리가 땅에 묶이는 현상입니다." },
+            { q: "포세이큰 매치 종료 후 산출되는 '악의' 수치는 게임 시스템 내부 코드상 어떤 공식 명칭으로 기록 및 연산됩니까?", a: ["살인마 매칭 기회 수치", "악의 게이지 축적도", "유령 역할 가중치", "다음 사냥꾼 확률"], c: 0, h: "다음 라운드에 살인마 역할을 맡을 수 있는 '기회'를 뜻하는 직관적인 코드어입니다." },
+            { q: "애저가 모든 봉헌 자원을 임계치까지 채워 각성하는 '분노 형태'의 순수 기본 지속 시간은 몇 초 동안 유지됩니까?", a: ["30초", "20초", "45초", "60초"], c: 0, h: "시계 바늘이 정확히 반 바퀴를 도는 주기를 가지고 있습니다." },
+            { q: "살인마 원엑스(1X)의 배경 설정에 따르면, 그가 로블록스 세계관을 파괴하려는 근본적인 분노의 원인은 무엇입니까?", a: ["세계가 3차원으로 존재하기 때문", "생존자들이 탈출에 성공하기 때문", "운영진에게 코드를 빼앗겼기 때문", "차원의 문이 닫혔기 때문"], c: 0, h: "그는 자신이 속한 차원보다 낮은 3차원의 형태를 증오합니다." },
+            { q: "생존자가 캐비닛 내부에 숨어있을 때, 무조건 숨어있는 시간과 무관하게 살인마에게 아우라가 영구 노출되기 시작하는 조건은 무엇입니까?", a: ["특정 한계 시간을 초과하여 체류 시", "들어가자마자 즉시 상시 노출", "살인마가 근처 10미터 내 접근 시", "발전기가 모두 수리 완료되었을 때"], c: 0, h: "장시간 아무것도 안 하고 숨어만 있는 유저를 저격하기 위한 장치입니다." },
+            { q: "포세이큰 시스템에서 발전기를 완벽한 타이밍에 맞추어 수리할 때 발동하는 최상위 판정의 정식 명칭은 무엇입니까?", a: ["최우수 성공 판정", "완벽 수리 타이밍", "정밀 조작 성공", "가속 수리 발동"], c: 0, h: "타이밍 게이지의 가장 좁은 영역을 명중시켰을 때의 결과물입니다." },
+            { q: "애저가 분노 형태로 활동하는 도중, 생존자 한 명을 완벽하게 처치(탈락)하는 데 성공하면 지속 시간이 몇 초 연장됩니까?", a: ["5초 연장", "3초 연장", "10초 연장", "연장 없음"], c: 0, h: "한 손의 손가락 개수만큼의 찰나의 순간을 더 부여받습니다." },
+            { q: "포세이큰의 모든 생존자가 가지는 기본 최대 체력(HP)의 기준 수치는 얼마로 고정되어 있습니까?", a: ["100 체력", "150 체력", "200 체력", "80 체력"], c: 0, h: "가장 기본적이고 직관적인 백분율의 기준 수치입니다." },
+            { q: "살인마 캐릭터들이 가지는 1인칭 시야(FOV) 및 시점의 제약은 생존자의 3인칭 시점과 비교했을 때 어떤 전략적 특징을 가집니까?", a: ["시야 범위가 좁고 사각지대가 많음", "사방을 전부 볼 수 있어 유리함", "생존자와 시점이 완벽하게 공유됨", "벽 뒤의 흔적까지 전부 투시함"], c: 0, h: "구조물 뒤에 은신한 생존자를 쉽게 찾지 못하도록 살인마에게 부여된 시각적 패널티입니다." }
+        ];
 
-    const displayElement = document.getElementById('display');
-    const startPauseBtn = document.getElementById('startPauseBtn');
+        let compiledQuiz = [];
+        let curQuestionIdx = 0;
+        let pointsEarned = 0;
+        let mainTimer = null;
+        let secondsLeft = 10;
 
-    function updateDisplay() {
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        displayElement.textContent = 
-            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
+        function beginAssessment() {
+            const countSelection = parseInt(document.getElementById("count-select").value);
+            let pool = [...MASTER_DATABASE];
+            pool.sort(() => Math.random() - 0.5);
 
-    function adjustTime(amount) {
-        totalSeconds += amount;
-        if (totalSeconds < 0) totalSeconds = 0;
-        updateDisplay();
-    }
+            compiledQuiz = [];
+            for (let i = 0; i < countSelection; i++) {
+                let baseData = pool[i % pool.length];
+                compiledQuiz.push({
+                    q: `[문항 ${i + 1}] ${baseData.q}`,
+                    a: [...baseData.a],
+                    c: baseData.c,
+                    h: baseData.h
+                });
+            }
 
-    function addPreset(minutes) {
-        totalSeconds += minutes * 60;
-        updateDisplay();
-    }
+            curQuestionIdx = 0;
+            pointsEarned = 0;
+            document.getElementById("setup-screen").classList.remove("active");
+            document.getElementById("quiz-screen").classList.add("active");
+            loadNextQuestion();
+        }
 
-    function toggleStartPause() {
-        if (isRunning) {
-            // 일시정지
-            clearInterval(timerInterval);
-            startPauseBtn.textContent = '시작';
-            startPauseBtn.className = 'btn-start';
-            isRunning = false;
-        } else {
-            // 시작
-            if (totalSeconds <= 0) return; // 시간이 0이면 시작 안 함
+        function loadNextQuestion() {
+            clearInterval(mainTimer);
+            secondsLeft = 10;
+
+            const activeQ = compiledQuiz[curQuestionIdx];
+            document.getElementById("progress-indicator").innerText = `검증 문항 ${curQuestionIdx + 1} / ${compiledQuiz.length}`;
+            document.getElementById("question-display").innerText = activeQ.q;
             
-            timerInterval = setInterval(() => {
-                if (totalSeconds > 0) {
-                    totalSeconds--;
-                    updateDisplay();
-                } else {
-                    clearInterval(timerInterval);
-                    alert('타이머가 종료되었습니다!');
-                    resetTimer();
+            const hintBox = document.getElementById("cryptic-hint-box");
+            hintBox.style.display = "none";
+            hintBox.innerText = `💡 오묘한 힌트: ${activeQ.h}`;
+
+            const timerBox = document.getElementById("timer-box");
+            timerBox.innerText = `${secondsLeft}초`;
+            timerBox.classList.remove("warning");
+
+            const optionsContainer = document.getElementById("options-container");
+            optionsContainer.innerHTML = "";
+
+            activeQ.a.forEach((optionText, originalIdx) => {
+                const optionElement = document.createElement("div");
+                optionElement.className = "option-card";
+                optionElement.innerText = optionText;
+                optionElement.setAttribute("data-idx", originalIdx);
+                optionElement.onclick = () => validateSelection(optionElement, originalIdx, activeQ.c);
+                optionsContainer.appendChild(optionElement);
+            });
+
+            mainTimer = setInterval(() => {
+                secondsLeft--;
+                timerBox.innerText = `${secondsLeft}초`;
+
+                if (secondsLeft <= 5) {
+                    timerBox.classList.add("warning");
+                    hintBox.style.display = "block";
+                }
+
+                if (secondsLeft <= 0) {
+                    clearInterval(mainTimer);
+                    handleTimeout(activeQ.c);
                 }
             }, 1000);
-            
-            startPauseBtn.textContent = '일시정지';
-            startPauseBtn.className = 'btn-pause';
-            isRunning = true;
         }
-    }
 
-    function resetTimer() {
-        clearInterval(timerInterval);
-        totalSeconds = 0;
-        isRunning = false;
-        startPauseBtn.textContent = '시작';
-        startPauseBtn.className = 'btn-start';
-        updateDisplay();
-    }
+        function validateSelection(element, chosenIdx, correctIdx) {
+            clearInterval(mainTimer);
+            const cards = document.querySelectorAll(".option-card");
+            cards.forEach(c => c.classList.add("disabled"));
 
-    // 초기 디스플레이 설정
-    updateDisplay();
-</script>
+            if (chosenIdx === correctIdx) {
+                element.classList.add("correct-pick");
+                pointsEarned++;
+            } else {
+                element.classList.add("wrong-pick");
+                // 틀렸을 때 정답인 카드 찾아서 초록색으로 하이라이트!!
+                cards.forEach(c => {
+                    if (parseInt(c.getAttribute("data-idx")) === correctIdx) {
+                        c.classList.add("correct-pick");
+                    }
+                });
+            }
 
+            setTimeout(() => {
+                shiftNextStep();
+            }, 1500);
+        }
+
+        function handleTimeout(correctIdx) {
+            const cards = document.querySelectorAll(".option-card");
+            cards.forEach(c => {
+                c.classList.add("disabled");
+                if (parseInt(c.getAttribute("data-idx")) === correctIdx) {
+                    c.classList.add("correct-pick"); // 시간초과 시 정답 표시
+                }
+            });
+            setTimeout(() => {
+                shiftNextStep();
+            }, 1500);
+        }
+
+        function shiftNextStep() {
+            curQuestionIdx++;
+            if (curQuestionIdx < compiledQuiz.length) {
+                loadNextQuestion();
+            } else {
+                displayFinalReport();
+            }
+        }
+
+        function displayFinalReport() {
+            document.getElementById("quiz-screen").classList.remove("active");
+            document.getElementById("result-screen").classList.add("active");
+            document.getElementById("result-score").innerText = `${pointsEarned} / ${compiledQuiz.length} 판정 성공`;
+
+            let successRate = pointsEarned / compiledQuiz.length;
+            let reportComment = "";
+
+            if (successRate === 1) {
+                reportComment = "👑 [등급: 초월적 고수] 완벽합니다! 원엑스의 고유 차트 분해와 애저의 세부 프레임 수치까지 전부 인지하고 계시는군요. 당신 앞에서는 어떤 킬러도 탈출을 막을 수 없습니다.";
+            } else if (successRate >= 0.8) {
+                reportComment = "⚡ [등급: 최상위 생존마] 엘리엇의 피자 회복 범위와 시스템 내부 매커니즘을 영리하게 계산할 줄 아는 베테랑입니다. 실전 판자 심리전의 지배자이십니다.";
+            } else if (successRate >= 0.5) {
+                reportComment = "🏃 [등급: 평범한 기술자] 기본 시스템은 꿰뚫고 있으나 신규 패치 내용과 고난도 캐릭터 메커니즘에서 다소 연산 누수가 발생했습니다. 실전을 통해 감각을 더 날카롭게 정련하십시오.";
+            } else {
+                reportComment = "💀 [등급: 캐비닛 의존자] 고수의 칭호가 무색하게 발전기 폭발음만 울려 퍼졌습니다. 살인마들의 고유 시야 각도와 낙하 경직 타이밍을 처음부터 다시 복습할 필요가 있습니다.";
+            }
+
+            document.getElementById("result-eval").innerText = reportComment;
+        }
+
+        function restartSystem() {
+            document.getElementById("result-screen").classList.remove("active");
+            document.getElementById("setup-screen").classList.add("active");
+        }
+    </script>
 </body>
 </html>
