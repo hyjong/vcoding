@@ -1,39 +1,175 @@
-quiz = [
+<!DOCTYPE html>
 
-    ("H", "수소"),
+<html lang="ko">
 
-    ("O", "산소"),
+<head>
 
-    ("C", "탄소"),
+  <meta charset="UTF-8">
 
-    ("N", "질소"),
+  <title>원소 기호 퀴즈</title>
 
-    ("Na", "나트륨"),
+  <style>
 
-    ("K", "칼륨"),
+    body {
 
-    ("Fe", "철"),
+      font-family: Arial, sans-serif;
 
-    ("Cu", "구리"),
+      text-align: center;
 
-]
+      margin-top: 80px;
 
-score = 0
+    }
 
-print("🧪 원소 기호 퀴즈 시작!\n")
+    .box {
 
-for symbol, name in quiz:
+      border: 2px solid #333;
 
-    answer = input(f"{name}의 원소 기호는? ")
+      display: inline-block;
 
-    if answer.strip().lower() == symbol.lower():
+      padding: 30px;
 
-        print("✔ 정답!\n")
+      border-radius: 12px;
 
-        score += 1
+    }
 
-    else:
+    input {
 
-        print(f"✘ 오답! 정답은 {symbol}\n")
+      padding: 10px;
 
-print(f"🎯 최종 점수: {score}/{len(quiz)}")
+      font-size: 16px;
+
+      width: 200px;
+
+    }
+
+    button {
+
+      padding: 10px 15px;
+
+      font-size: 16px;
+
+      margin-left: 10px;
+
+      cursor: pointer;
+
+    }
+
+    #result {
+
+      margin-top: 20px;
+
+      font-weight: bold;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h2>🧪 원소 기호 퀴즈</h2>
+
+    <p id="question"></p>
+
+    <input type="text" id="answer" placeholder="기호 입력">
+
+    <button onclick="checkAnswer()">확인</button>
+
+    <p id="result"></p>
+
+    <p id="score"></p>
+
+  </div>
+
+<script>
+
+const quiz = [
+
+  { name: "수소", symbol: "H" },
+
+  { name: "헬륨", symbol: "He" },
+
+  { name: "탄소", symbol: "C" },
+
+  { name: "질소", symbol: "N" },
+
+  { name: "산소", symbol: "O" },
+
+  { name: "나트륨", symbol: "Na" },
+
+  { name: "칼륨", symbol: "K" },
+
+  { name: "철", symbol: "Fe" },
+
+  { name: "구리", symbol: "Cu" },
+
+  { name: "은", symbol: "Ag" }
+
+];
+
+let index = 0;
+
+let score = 0;
+
+const questionEl = document.getElementById("question");
+
+const resultEl = document.getElementById("result");
+
+const scoreEl = document.getElementById("score");
+
+const inputEl = document.getElementById("answer");
+
+function showQuestion() {
+
+  if (index < quiz.length) {
+
+    questionEl.textContent = `${quiz[index].name}의 원소 기호는?`;
+
+  } else {
+
+    questionEl.textContent = "퀴즈 종료!";
+
+    resultEl.textContent = "";
+
+    scoreEl.textContent = `🎯 최종 점수: ${score} / ${quiz.length}`;
+
+  }
+
+}
+
+function checkAnswer() {
+
+  const user = inputEl.value.trim();
+
+  if (user.toLowerCase() === quiz[index].symbol.toLowerCase()) {
+
+    resultEl.textContent = "✔ 정답!";
+
+    score++;
+
+  } else {
+
+    resultEl.textContent = `✘ 오답! 정답은 ${quiz[index].symbol}`;
+
+  }
+
+  index++;
+
+  inputEl.value = "";
+
+  showQuestion();
+
+  scoreEl.textContent = `점수: ${score}`;
+
+}
+
+showQuestion();
+
+</script>
+
+</body>
+
+</html>
