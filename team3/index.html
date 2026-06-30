@@ -1,191 +1,72 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>심플 타이머</title>
-    <style>
-        body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
-        }
-        .timer-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            width: 360px;
-        }
-        .timer-display {
-            font-size: 54px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            font-variant-numeric: tabular-nums;
-            color: #2c3e50;
-        }
-        .btn-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .preset-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .control-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        button {
-            padding: 12px 15px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-adjust {
-            background-color: #ebf3fe;
-            color: #3182ce;
-        }
-        .btn-adjust:hover {
-            background-color: #deeafc;
-        }
-        .btn-preset {
-            background-color: #f1f3f5;
-            color: #495057;
-            font-size: 14px;
-        }
-        .btn-preset:hover {
-            background-color: #e9ecef;
-        }
-        .btn-start {
-            background-color: #2f855a;
-            color: white;
-            grid-column: span 1;
-        }
-        .btn-start:hover {
-            background-color: #276749;
-        }
-        .btn-pause {
-            background-color: #dd6b20;
-            color: white;
-        }
-        .btn-pause:hover {
-            background-color: #c05621;
-        }
-        .btn-reset {
-            background-color: #e53e3e;
-            color: white;
-        }
-        .btn-reset:hover {
-            background-color: #9b2c2c;
-        }
-    </style>
-</head>
-<body>
+from pathlib import Path
 
-<div class="timer-container">
-    <div class="timer-display" id="display">00:00</div>
-    
-    <!-- +, - 5초 조절 버튼 -->
-    <div class="btn-group">
-        <button class="btn-adjust" onclick="adjustTime(-5)">- 5초</button>
-        <button class="btn-adjust" onclick="adjustTime(5)">+ 5초</button>
-    </div>
-    
-    <!-- 1분, 5분, 10분 버튼 -->
-    <div class="preset-group">
-        <button class="btn-preset" onclick="addPreset(1)">1분</button>
-        <button class="btn-preset" onclick="addPreset(5)">5분</button>
-        <button class="btn-preset" onclick="addPreset(10)">10분</button>
-    </div>
-    
-    <!-- 시작 / 정지 / 초기화 제어 버튼 -->
-    <div class="control-group">
-        <button class="btn-start" id="startPauseBtn" onclick="toggleStartPause()">시작</button>
-        <button class="btn-reset" onclick="resetTimer()">초기화</button>
-    </div>
-</div>
+html="""<!doctype html><html lang='ko'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+
+<title>덕후급 귀멸 퀴즈</title><style>
+
+body{background:#d8c8a8;font-family:Arial;padding:20px}
+
+.card{max-width:900px;margin:auto;background:#fffdf7;padding:24px;border-radius:16px;box-shadow:0 6px 18px #0004}
+
+button{display:block;width:100%;margin:8px 0;padding:12px;border-radius:10px;border:0;background:#ece5d6;cursor:pointer}
+
+#timer{font-weight:bold;color:#900}
+
+</style></head><body><div class='card'><h1>📖 귀멸의 칼날 덕후급 퀴즈</h1><div id='timer'></div><h2 id='q'></h2><div id='a'></div></div>
 
 <script>
-    let totalSeconds = 0;
-    let timerInterval = null;
-    let isRunning = false;
 
-    const displayElement = document.getElementById('display');
-    const startPauseBtn = document.getElementById('startPauseBtn');
+const quiz=[
 
-    function updateDisplay() {
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        displayElement.textContent = 
-            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
+{q:"무잔의 심장/뇌 개수는?",a:["5/7","7/5","6/6","8/4"],c:1},
 
-    function adjustTime(amount) {
-        totalSeconds += amount;
-        if (totalSeconds < 0) totalSeconds = 0;
-        updateDisplay();
-    }
+{q:"무잔이 분열한 조각 수는?",a:["1200","1500","1800","2000"],c:2},
 
-    function addPreset(minutes) {
-        totalSeconds += minutes * 60;
-        updateDisplay();
-    }
+{q:"코쿠시보의 인간 이름은?",a:["미치카츠","요리이치","하쿠지","카이가쿠"],c:0},
 
-    function toggleStartPause() {
-        if (isRunning) {
-            // 일시정지
-            clearInterval(timerInterval);
-            startPauseBtn.textContent = '시작';
-            startPauseBtn.className = 'btn-start';
-            isRunning = false;
-        } else {
-            // 시작
-            if (totalSeconds <= 0) return; // 시간이 0이면 시작 안 함
-            
-            timerInterval = setInterval(() => {
-                if (totalSeconds > 0) {
-                    totalSeconds--;
-                    updateDisplay();
-                } else {
-                    clearInterval(timerInterval);
-                    alert('타이머가 종료되었습니다!');
-                    resetTimer();
-                }
-            }, 1000);
-            
-            startPauseBtn.textContent = '일시정지';
-            startPauseBtn.className = 'btn-pause';
-            isRunning = true;
-        }
-    }
+{q:"요리이치 사망 나이는?",a:["82","84","85","87"],c:2},
 
-    function resetTimer() {
-        clearInterval(timerInterval);
-        totalSeconds = 0;
-        isRunning = false;
-        startPauseBtn.textContent = '시작';
-        startPauseBtn.className = 'btn-start';
-        updateDisplay();
-    }
+{q:"무잔이 가장 두려워한 존재는?",a:["태양","탄지로","요리이치","교메이"],c:2},
 
-    // 초기 디스플레이 설정
-    updateDisplay();
-</script>
+{q:"아카자의 인간 이름은?",a:["하쿠지","겐조","소이치","렌"],c:0},
 
-</body>
-</html>
+{q:"도우마가 이끈 종교는?",a:["명월교","극락교","천도교","만세교"],c:1},
+
+{q:"카이가쿠의 호흡은?",a:["물","바람","번개","달"],c:2},
+
+{q:"요리이치 귀걸이 이름은?",a:["태양","하나후다","일륜","해"],c:1},
+
+{q:"13형의 의미는?",a:["숨겨진 기술","최강기","12형 반복으로 무잔의 핵 파괴","혁도 발동"],c:2}
+
+];
+
+let i=0,s=0,t,intv;
+
+const q=qid=document.getElementById('q'),a=document.getElementById('a'),tm=document.getElementById('timer');
+
+function tick(){tm.textContent='⏰ '+t+'초';}
+
+function show(){
+
+if(i>=quiz.length){clearInterval(intv);let rank=s==10?'SSS+':s>=9?'SSS':s>=8?'SS':s>=6?'S':s>=4?'A':'B';
+
+q.innerHTML=`완료! ${s}/10`;a.innerHTML=`<h2>${rank}</h2><button onclick='location.reload()'>다시하기</button>`;tm.textContent='';return;}
+
+clearInterval(intv);t=50;tick();intv=setInterval(()=>{t--;tick();if(t<=0){i++;show();}},1000);
+
+q.textContent=(i+1)+'. '+quiz[i].q;a.innerHTML='';
+
+quiz[i].a.forEach((v,n)=>{let b=document.createElement('button');b.textContent=v;b.onclick=()=>{clearInterval(intv);if(n===quiz[i].c)s++;i++;show();};a.appendChild(b);});
+
+}
+
+show();
+
+</script></body></html>"""
+
+path=Path("/mnt/data/귀멸_덕후급_퀴즈.html")
+
+path.write_text(html,encoding="utf-8")
+
+print(path)
+
