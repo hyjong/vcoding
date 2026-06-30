@@ -1,191 +1,177 @@
 <!DOCTYPE html>
+
 <html lang="ko">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>심플 타이머</title>
-    <style>
-        body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
-        }
-        .timer-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            width: 360px;
-        }
-        .timer-display {
-            font-size: 54px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            font-variant-numeric: tabular-nums;
-            color: #2c3e50;
-        }
-        .btn-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .preset-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .control-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        button {
-            padding: 12px 15px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-adjust {
-            background-color: #ebf3fe;
-            color: #3182ce;
-        }
-        .btn-adjust:hover {
-            background-color: #deeafc;
-        }
-        .btn-preset {
-            background-color: #f1f3f5;
-            color: #495057;
-            font-size: 14px;
-        }
-        .btn-preset:hover {
-            background-color: #e9ecef;
-        }
-        .btn-start {
-            background-color: #2f855a;
-            color: white;
-            grid-column: span 1;
-        }
-        .btn-start:hover {
-            background-color: #276749;
-        }
-        .btn-pause {
-            background-color: #dd6b20;
-            color: white;
-        }
-        .btn-pause:hover {
-            background-color: #c05621;
-        }
-        .btn-reset {
-            background-color: #e53e3e;
-            color: white;
-        }
-        .btn-reset:hover {
-            background-color: #9b2c2c;
-        }
-    </style>
+
+<meta charset="UTF-8">
+
+<title>구구단 퀴즈</title>
+
+<style>
+
+body{
+
+    font-family: sans-serif;
+
+    text-align:center;
+
+    margin-top:50px;
+
+}
+
+button{
+
+    padding:10px 20px;
+
+    margin:10px;
+
+    font-size:18px;
+
+}
+
+input{
+
+    font-size:20px;
+
+    width:100px;
+
+    text-align:center;
+
+}
+
+</style>
+
 </head>
+
 <body>
 
-<div class="timer-container">
-    <div class="timer-display" id="display">00:00</div>
-    
-    <!-- +, - 5초 조절 버튼 -->
-    <div class="btn-group">
-        <button class="btn-adjust" onclick="adjustTime(-5)">- 5초</button>
-        <button class="btn-adjust" onclick="adjustTime(5)">+ 5초</button>
-    </div>
-    
-    <!-- 1분, 5분, 10분 버튼 -->
-    <div class="preset-group">
-        <button class="btn-preset" onclick="addPreset(1)">1분</button>
-        <button class="btn-preset" onclick="addPreset(5)">5분</button>
-        <button class="btn-preset" onclick="addPreset(10)">10분</button>
-    </div>
-    
-    <!-- 시작 / 정지 / 초기화 제어 버튼 -->
-    <div class="control-group">
-        <button class="btn-start" id="startPauseBtn" onclick="toggleStartPause()">시작</button>
-        <button class="btn-reset" onclick="resetTimer()">초기화</button>
-    </div>
+<h1>구구단 퀴즈</h1>
+
+<div id="game">
+
+    <h2 id="question"></h2>
+
+    <input type="number" id="answer">
+
+    <br><br>
+
+    <button onclick="check()">확인</button>
+
+    <button onclick="restart()">다시 시작</button>
+
+    <button onclick="quit()">그만하기</button>
+
+    <p id="count"></p>
+
+    <p id="message"></p>
+
 </div>
 
 <script>
-    let totalSeconds = 0;
-    let timerInterval = null;
-    let isRunning = false;
 
-    const displayElement = document.getElementById('display');
-    const startPauseBtn = document.getElementById('startPauseBtn');
+let total=7;
 
-    function updateDisplay() {
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        displayElement.textContent = 
-            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+let current=0;
+
+let a,b;
+
+let startTime;
+
+function startGame(){
+
+    current=0;
+
+    startTime=new Date();
+
+    nextQuestion();
+
+}
+
+function nextQuestion(){
+
+    if(current>=total){
+
+        finish();
+
+        return;
+
     }
 
-    function adjustTime(amount) {
-        totalSeconds += amount;
-        if (totalSeconds < 0) totalSeconds = 0;
-        updateDisplay();
+    a=Math.floor(Math.random()*8)+2;
+
+    b=Math.floor(Math.random()*9)+1;
+
+    document.getElementById("question").innerHTML=
+
+    (current+1)+"번 문제 : "+a+" × "+b+" = ?";
+
+    document.getElementById("answer").value="";
+
+    document.getElementById("message").innerHTML="";
+
+    document.getElementById("count").innerHTML=
+
+    "진행 : "+current+" / "+total;
+
+}
+
+function check(){
+
+    let ans=Number(document.getElementById("answer").value);
+
+    if(ans===a*b){
+
+        current++;
+
+        nextQuestion();
+
+    }else{
+
+        document.getElementById("message").innerHTML=
+
+        "틀렸습니다! 다시 시작 버튼을 눌러주세요.";
+
     }
 
-    function addPreset(minutes) {
-        totalSeconds += minutes * 60;
-        updateDisplay();
-    }
+}
 
-    function toggleStartPause() {
-        if (isRunning) {
-            // 일시정지
-            clearInterval(timerInterval);
-            startPauseBtn.textContent = '시작';
-            startPauseBtn.className = 'btn-start';
-            isRunning = false;
-        } else {
-            // 시작
-            if (totalSeconds <= 0) return; // 시간이 0이면 시작 안 함
-            
-            timerInterval = setInterval(() => {
-                if (totalSeconds > 0) {
-                    totalSeconds--;
-                    updateDisplay();
-                } else {
-                    clearInterval(timerInterval);
-                    alert('타이머가 종료되었습니다!');
-                    resetTimer();
-                }
-            }, 1000);
-            
-            startPauseBtn.textContent = '일시정지';
-            startPauseBtn.className = 'btn-pause';
-            isRunning = true;
-        }
-    }
+function restart(){
 
-    function resetTimer() {
-        clearInterval(timerInterval);
-        totalSeconds = 0;
-        isRunning = false;
-        startPauseBtn.textContent = '시작';
-        startPauseBtn.className = 'btn-start';
-        updateDisplay();
-    }
+    startGame();
 
-    // 초기 디스플레이 설정
-    updateDisplay();
+}
+
+function quit(){
+
+    document.getElementById("game").innerHTML=
+
+    "<h2>게임을 종료했습니다.</h2>";
+
+}
+
+function finish(){
+
+    let end=new Date();
+
+    let sec=Math.floor((end-startTime)/1000);
+
+    let min=Math.floor(sec/60);
+
+    let s=sec%60;
+
+    document.getElementById("game").innerHTML=
+
+    "<h2>축하합니다!</h2>" +
+
+    "<h3>"+min+"분 "+s+"초 걸렸습니다.</h3>";
+
+}
+
+startGame();
+
 </script>
 
 </body>
+
 </html>
