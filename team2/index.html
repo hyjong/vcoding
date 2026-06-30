@@ -3,189 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>심플 타이머</title>
+    <title>재미있는 캐릭터 맞추기 퀴즈</title>
     <style>
         body {
             font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background-color: #f4f6f9;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
+            flex-direction: column;
         }
-        .timer-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            width: 360px;
-        }
-        .timer-display {
-            font-size: 54px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            font-variant-numeric: tabular-nums;
-            color: #2c3e50;
-        }
-        .btn-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+        .quiz-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
-        .preset-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
         }
-        .control-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        .quiz-card {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4a90e2;
+        }
+        .hint-title {
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+        .hints {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
         }
         button {
-            padding: 12px 15px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.2s;
         }
-        .btn-adjust {
-            background-color: #ebf3fe;
-            color: #3182ce;
+        button:hover {
+            background-color: #357abd;
         }
-        .btn-adjust:hover {
-            background-color: #deeafc;
+        .result {
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
         }
-        .btn-preset {
-            background-color: #f1f3f5;
-            color: #495057;
-            font-size: 14px;
+        .correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
         }
-        .btn-preset:hover {
-            background-color: #e9ecef;
-        }
-        .btn-start {
-            background-color: #2f855a;
-            color: white;
-            grid-column: span 1;
-        }
-        .btn-start:hover {
-            background-color: #276749;
-        }
-        .btn-pause {
-            background-color: #dd6b20;
-            color: white;
-        }
-        .btn-pause:hover {
-            background-color: #c05621;
-        }
-        .btn-reset {
-            background-color: #e53e3e;
-            color: white;
-        }
-        .btn-reset:hover {
-            background-color: #9b2c2c;
+        .incorrect {
+            background-color: #ffebee;
+            color: #c62828;
         }
     </style>
 </head>
 <body>
 
-<div class="timer-container">
-    <div class="timer-display" id="display">00:00</div>
-    
-    <!-- +, - 5초 조절 버튼 -->
-    <div class="btn-group">
-        <button class="btn-adjust" onclick="adjustTime(-5)">- 5초</button>
-        <button class="btn-adjust" onclick="adjustTime(5)">+ 5초</button>
+    <div class="quiz-container">
+        <h1>✨ 캐릭터 맞추기 퀴즈 ✨</h1>
+
+        <!-- Quiz 1 -->
+        <div class="quiz-card" id="quiz-1">
+            <div class="hint-title">문제 1</div>
+            <div class="hints">
+                • 꿀을 엄청나게 좋아하는 통통하고 노란 아기 곰입니다.<br>
+                • 항상 빨간색 작은 티셔츠를 입고 있으며, 숲속 친구들(피글렛, 티거 등)과 함께 살고 있습니다.
+            </div>
+            <div class="input-group">
+                <input type="text" id="answer-1" placeholder="정답을 입력하세요">
+                <button onclick="checkAnswer(1, ['곰돌이 푸', '곰돌이푸', '푸', 'winnie the pooh'])">정답 확인</button>
+            </div>
+            <div class="result" id="result-1"></div>
+        </div>
+
+        <!-- Quiz 2 -->
+        <div class="quiz-card" id="quiz-2">
+            <div class="hint-title">문제 2</div>
+            <div class="hints">
+                • 바닷속 '비키니 시티'라는 마을의 파인애플 집에서 살고 있는 네모난 모양의 해면동물입니다.<br>
+                • 집게리아에서 게살버거를 만드는 요리사이며, 뚱이와 징징이라는 친구가 있습니다.
+            </div>
+            <div class="input-group">
+                <input type="text" id="answer-2" placeholder="정답을 입력하세요">
+                <button onclick="checkAnswer(2, ['스폰지밥', '네모바지 스폰지밥', '스펀지밥', 'spongebob'])">정답 확인</button>
+            </div>
+            <div class="result" id="result-2"></div>
+        </div>
+
+        <!-- Quiz 3 -->
+        <div class="quiz-card" id="quiz-3">
+            <div class="hint-title">문제 3</div>
+            <div class="hints">
+                • 고양이처럼 생겼지만 실제로는 고양이가 아닌, 왼쪽 귀에 빨간 리본을 단 전 세계적인 만화 캐릭터입니다.<br>
+                • 입이 그려져 있지 않은 것이 특징이며, 산리오를 대표하는 캐릭터입니다.
+            </div>
+            <div class="input-group">
+                <input type="text" id="answer-3" placeholder="정답을 입력하세요">
+                <button onclick="checkAnswer(3, ['헬로키티', '헬로 키티', '키티', 'hello kitty'])">정답 확인</button>
+            </div>
+            <div class="result" id="result-3"></div>
+        </div>
+
+        <!-- Quiz 4 -->
+        <div class="quiz-card" id="quiz-4">
+            <div class="hint-title">문제 4</div>
+            <div class="hints">
+                • 머리에 프로펠러(대나무 헬리콥터)를 달고 하늘을 날아다니는 파란색 고양이 모양 로봇입니다.<br>
+                • 미래에서 온 로봇으로, 배에 있는 4차원 주머니에서 신기한 비밀 도구들을 꺼내 진구를 도와줍니다.
+            </div>
+            <div class="input-group">
+                <input type="text" id="answer-4" placeholder="정답을 입력하세요">
+                <button onclick="checkAnswer(4, ['도라에몽', 'doraemon'])">정답 확인</button>
+            </div>
+            <div class="result" id="result-4"></div>
+        </div>
     </div>
-    
-    <!-- 1분, 5분, 10분 버튼 -->
-    <div class="preset-group">
-        <button class="btn-preset" onclick="addPreset(1)">1분</button>
-        <button class="btn-preset" onclick="addPreset(5)">5분</button>
-        <button class="btn-preset" onclick="addPreset(10)">10분</button>
-    </div>
-    
-    <!-- 시작 / 정지 / 초기화 제어 버튼 -->
-    <div class="control-group">
-        <button class="btn-start" id="startPauseBtn" onclick="toggleStartPause()">시작</button>
-        <button class="btn-reset" onclick="resetTimer()">초기화</button>
-    </div>
-</div>
 
-<script>
-    let totalSeconds = 0;
-    let timerInterval = null;
-    let isRunning = false;
+    <script>
+        const correctAnswersDisplay = {
+            1: "곰돌이 푸 (Winnie the Pooh)",
+            2: "스폰지밥 (SpongeBob SquarePants)",
+            3: "헬로키티 (Hello Kitty)",
+            4: "도라에몽 (Doraemon)"
+        };
 
-    const displayElement = document.getElementById('display');
-    const startPauseBtn = document.getElementById('startPauseBtn');
+        function checkAnswer(quizNum, validAnswers) {
+            const inputElement = document.getElementById(`answer-${quizNum}`);
+            const resultElement = document.getElementById(`result-${quizNum}`);
+            const userAnswer = inputElement.value.trim().toLowerCase();
 
-    function updateDisplay() {
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        displayElement.textContent = 
-            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
+            if (!userAnswer) {
+                alert("정답을 입력해주세요!");
+                return;
+            }
 
-    function adjustTime(amount) {
-        totalSeconds += amount;
-        if (totalSeconds < 0) totalSeconds = 0;
-        updateDisplay();
-    }
+            // 정답 여부 확인
+            const isCorrect = validAnswers.some(ans => userAnswer.includes(ans.toLowerCase()) || ans.toLowerCase().includes(userAnswer));
 
-    function addPreset(minutes) {
-        totalSeconds += minutes * 60;
-        updateDisplay();
-    }
-
-    function toggleStartPause() {
-        if (isRunning) {
-            // 일시정지
-            clearInterval(timerInterval);
-            startPauseBtn.textContent = '시작';
-            startPauseBtn.className = 'btn-start';
-            isRunning = false;
-        } else {
-            // 시작
-            if (totalSeconds <= 0) return; // 시간이 0이면 시작 안 함
+            resultElement.style.display = "block";
             
-            timerInterval = setInterval(() => {
-                if (totalSeconds > 0) {
-                    totalSeconds--;
-                    updateDisplay();
-                } else {
-                    clearInterval(timerInterval);
-                    alert('타이머가 종료되었습니다!');
-                    resetTimer();
-                }
-            }, 1000);
-            
-            startPauseBtn.textContent = '일시정지';
-            startPauseBtn.className = 'btn-pause';
-            isRunning = true;
+            if (isCorrect) {
+                resultElement.className = "result correct";
+                resultElement.innerHTML = `🎉 정답입니다! 정답은 <strong>${correctAnswersDisplay[quizNum]}</strong> 입니다.`;
+            } else {
+                resultElement.className = "result incorrect";
+                resultElement.innerHTML = `😢 틀렸습니다! 정답은 <strong>${correctAnswersDisplay[quizNum]}</strong> 입니다. 다시 도전해보세요!`;
+            }
         }
-    }
-
-    function resetTimer() {
-        clearInterval(timerInterval);
-        totalSeconds = 0;
-        isRunning = false;
-        startPauseBtn.textContent = '시작';
-        startPauseBtn.className = 'btn-start';
-        updateDisplay();
-    }
-
-    // 초기 디스플레이 설정
-    updateDisplay();
-</script>
-
+    </script>
 </body>
 </html>
