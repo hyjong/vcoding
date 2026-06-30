@@ -1,191 +1,110 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>심플 타이머</title>
-    <style>
-        body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
-        }
-        .timer-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            width: 360px;
-        }
-        .timer-display {
-            font-size: 54px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            font-variant-numeric: tabular-nums;
-            color: #2c3e50;
-        }
-        .btn-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .preset-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .control-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        button {
-            padding: 12px 15px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-adjust {
-            background-color: #ebf3fe;
-            color: #3182ce;
-        }
-        .btn-adjust:hover {
-            background-color: #deeafc;
-        }
-        .btn-preset {
-            background-color: #f1f3f5;
-            color: #495057;
-            font-size: 14px;
-        }
-        .btn-preset:hover {
-            background-color: #e9ecef;
-        }
-        .btn-start {
-            background-color: #2f855a;
-            color: white;
-            grid-column: span 1;
-        }
-        .btn-start:hover {
-            background-color: #276749;
-        }
-        .btn-pause {
-            background-color: #dd6b20;
-            color: white;
-        }
-        .btn-pause:hover {
-            background-color: #c05621;
-        }
-        .btn-reset {
-            background-color: #e53e3e;
-            color: white;
-        }
-        .btn-reset:hover {
-            background-color: #9b2c2c;
-        }
-    </style>
-</head>
-<body>
-
-<div class="timer-container">
-    <div class="timer-display" id="display">00:00</div>
-    
-    <!-- +, - 5초 조절 버튼 -->
-    <div class="btn-group">
-        <button class="btn-adjust" onclick="adjustTime(-5)">- 5초</button>
-        <button class="btn-adjust" onclick="adjustTime(5)">+ 5초</button>
-    </div>
-    
-    <!-- 1분, 5분, 10분 버튼 -->
-    <div class="preset-group">
-        <button class="btn-preset" onclick="addPreset(1)">1분</button>
-        <button class="btn-preset" onclick="addPreset(5)">5분</button>
-        <button class="btn-preset" onclick="addPreset(10)">10분</button>
-    </div>
-    
-    <!-- 시작 / 정지 / 초기화 제어 버튼 -->
-    <div class="control-group">
-        <button class="btn-start" id="startPauseBtn" onclick="toggleStartPause()">시작</button>
-        <button class="btn-reset" onclick="resetTimer()">초기화</button>
-    </div>
-</div>
-
+<!doctype html><html lang='ko'><meta charset='utf-8'><title>100문제 퀴즈</title>
+<style>body{font-family:sans-serif;background:#111;color:#fff;padding:20px}button{display:block;margin:6px 0}</style>
+<h1>고등학생 상식 퀴즈 (100문제)</h1><div>점수 <span id=s>0</span></div><div id=t></div><div id=p></div><h2 id=q></h2><div id=c></div><div id=x style='display:none'><input id=a><button onclick='sub()'>제출</button></div>
 <script>
-    let totalSeconds = 0;
-    let timerInterval = null;
-    let isRunning = false;
-
-    const displayElement = document.getElementById('display');
-    const startPauseBtn = document.getElementById('startPauseBtn');
-
-    function updateDisplay() {
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        displayElement.textContent = 
-            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    function adjustTime(amount) {
-        totalSeconds += amount;
-        if (totalSeconds < 0) totalSeconds = 0;
-        updateDisplay();
-    }
-
-    function addPreset(minutes) {
-        totalSeconds += minutes * 60;
-        updateDisplay();
-    }
-
-    function toggleStartPause() {
-        if (isRunning) {
-            // 일시정지
-            clearInterval(timerInterval);
-            startPauseBtn.textContent = '시작';
-            startPauseBtn.className = 'btn-start';
-            isRunning = false;
-        } else {
-            // 시작
-            if (totalSeconds <= 0) return; // 시간이 0이면 시작 안 함
-            
-            timerInterval = setInterval(() => {
-                if (totalSeconds > 0) {
-                    totalSeconds--;
-                    updateDisplay();
-                } else {
-                    clearInterval(timerInterval);
-                    alert('타이머가 종료되었습니다!');
-                    resetTimer();
-                }
-            }, 1000);
-            
-            startPauseBtn.textContent = '일시정지';
-            startPauseBtn.className = 'btn-pause';
-            isRunning = true;
-        }
-    }
-
-    function resetTimer() {
-        clearInterval(timerInterval);
-        totalSeconds = 0;
-        isRunning = false;
-        startPauseBtn.textContent = '시작';
-        startPauseBtn.className = 'btn-start';
-        updateDisplay();
-    }
-
-    // 초기 디스플레이 설정
-    updateDisplay();
+const quiz=[{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"},
+{t:"choice",q:"대한민국의 수도는?",c:["부산","서울","대전"],a:"서울"},
+{t:"text",q:"물의 화학식은?",a:"H2O"}];let i=0,sc=0,tm,it;
+function u(){s.textContent=sc;if(i>=quiz.length){document.body.innerHTML='<h1>끝</h1><h2>'+sc+'점</h2>';return;}let z=quiz[i];p.textContent=`문제 ${i+1}/${quiz.length}`;q.textContent=z.q;c.innerHTML='';x.style.display=z.t=='text'?'block':'none';tm=10;tick();clearInterval(it);it=setInterval(()=>{tm--;tick();if(tm<1){clearInterval(it);sc-=10;i++;u();}},1000);if(z.t=='choice')z.c.forEach(v=>{let b=document.createElement('button');b.textContent=v;b.onclick=()=>ck(v);c.appendChild(b);});}
+function tick(){t.textContent='남은시간 '+tm;}
+function ck(v){clearInterval(it);sc+=(v===quiz[i].a?20:-10);i++;u();}
+function sub(){ck(a.value.trim());}
+u();
 </script>
-
-</body>
-</html>
