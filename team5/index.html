@@ -6,37 +6,77 @@
 
 <meta charset="UTF-8">
 
-<title>구구단 퀴즈</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>무한 클릭 게임</title>
 
 <style>
 
 body{
 
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
 
     text-align:center;
 
-    margin-top:50px;
+    background:#e6f7ff;
+
+    margin-top:40px;
+
+}
+
+h1{
+
+    color:#333;
+
+}
+
+#count{
+
+    font-size:50px;
+
+    color:#ff5722;
+
+    margin:20px;
 
 }
 
 button{
 
-    padding:10px 20px;
-
-    margin:10px;
-
-    font-size:18px;
-
-}
-
-input{
+    padding:15px 30px;
 
     font-size:20px;
 
-    width:100px;
+    margin:10px;
 
-    text-align:center;
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+}
+
+#clickBtn{
+
+    background:#4CAF50;
+
+    color:white;
+
+}
+
+#resetBtn{
+
+    background:#2196F3;
+
+    color:white;
+
+}
+
+#quitBtn{
+
+    background:#f44336;
+
+    color:white;
 
 }
 
@@ -46,129 +86,61 @@ input{
 
 <body>
 
-<h1>구구단 퀴즈</h1>
+<h1>🎮 무한 클릭 게임</h1>
 
-<div id="game">
+<h2>🐻 클릭해 보세요!</h2>
 
-    <h2 id="question"></h2>
+<div id="count">0</div>
 
-    <input type="number" id="answer">
+<p>🏆 최고 기록 : <span id="best">0</span></p>
 
-    <br><br>
+<button id="clickBtn" onclick="clickGame()">클릭!</button>
 
-    <button onclick="check()">확인</button>
+<button id="resetBtn" onclick="resetGame()">초기화</button>
 
-    <button onclick="restart()">다시 시작</button>
-
-    <button onclick="quit()">그만하기</button>
-
-    <p id="count"></p>
-
-    <p id="message"></p>
-
-</div>
+<button id="quitBtn" onclick="quitGame()">그만하기</button>
 
 <script>
 
-let total=7;
+let count = 0;
 
-let current=0;
+let best = 0;
 
-let a,b;
+function clickGame(){
 
-let startTime;
+    count++;
 
-function startGame(){
+    document.getElementById("count").innerText = count;
 
-    current=0;
+    if(count > best){
 
-    startTime=new Date();
+        best = count;
 
-    nextQuestion();
-
-}
-
-function nextQuestion(){
-
-    if(current>=total){
-
-        finish();
-
-        return;
-
-    }
-
-    a=Math.floor(Math.random()*8)+2;
-
-    b=Math.floor(Math.random()*9)+1;
-
-    document.getElementById("question").innerHTML=
-
-    (current+1)+"번 문제 : "+a+" × "+b+" = ?";
-
-    document.getElementById("answer").value="";
-
-    document.getElementById("message").innerHTML="";
-
-    document.getElementById("count").innerHTML=
-
-    "진행 : "+current+" / "+total;
-
-}
-
-function check(){
-
-    let ans=Number(document.getElementById("answer").value);
-
-    if(ans===a*b){
-
-        current++;
-
-        nextQuestion();
-
-    }else{
-
-        document.getElementById("message").innerHTML=
-
-        "틀렸습니다! 다시 시작 버튼을 눌러주세요.";
+        document.getElementById("best").innerText = best;
 
     }
 
 }
 
-function restart(){
+function resetGame(){
 
-    startGame();
+    count = 0;
 
-}
-
-function quit(){
-
-    document.getElementById("game").innerHTML=
-
-    "<h2>게임을 종료했습니다.</h2>";
+    document.getElementById("count").innerText = count;
 
 }
 
-function finish(){
+function quitGame(){
 
-    let end=new Date();
+    document.body.innerHTML = `
 
-    let sec=Math.floor((end-startTime)/1000);
+        <h1>👋 게임을 종료했습니다.</h1>
 
-    let min=Math.floor(sec/60);
+        <h2>오늘의 최고 기록: ${best}회</h2>
 
-    let s=sec%60;
-
-    document.getElementById("game").innerHTML=
-
-    "<h2>축하합니다!</h2>" +
-
-    "<h3>"+min+"분 "+s+"초 걸렸습니다.</h3>";
+    `;
 
 }
-
-startGame();
 
 </script>
 
