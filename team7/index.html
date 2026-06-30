@@ -1,190 +1,211 @@
+
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>심플 타이머</title>
-    <style>
-        body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
-        }
-        .timer-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            width: 360px;
-        }
-        .timer-display {
-            font-size: 54px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            font-variant-numeric: tabular-nums;
-            color: #2c3e50;
-        }
-        .btn-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .preset-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .control-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        button {
-            padding: 12px 15px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-adjust {
-            background-color: #ebf3fe;
-            color: #3182ce;
-        }
-        .btn-adjust:hover {
-            background-color: #deeafc;
-        }
-        .btn-preset {
-            background-color: #f1f3f5;
-            color: #495057;
-            font-size: 14px;
-        }
-        .btn-preset:hover {
-            background-color: #e9ecef;
-        }
-        .btn-start {
-            background-color: #2f855a;
-            color: white;
-            grid-column: span 1;
-        }
-        .btn-start:hover {
-            background-color: #276749;
-        }
-        .btn-pause {
-            background-color: #dd6b20;
-            color: white;
-        }
-        .btn-pause:hover {
-            background-color: #c05621;
-        }
-        .btn-reset {
-            background-color: #e53e3e;
-            color: white;
-        }
-        .btn-reset:hover {
-            background-color: #9b2c2c;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>함정 퀴즈 게임</title>
+
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:#111;
+    color:white;
+}
+
+button{
+    padding:10px 16px;
+    margin:6px;
+    cursor:pointer;
+    border:none;
+    border-radius:8px;
+}
+
+.choice{
+    display:block;
+    width:300px;
+    margin:10px auto;
+    background:#3498db;
+    color:white;
+}
+
+#menu,#game,#end{
+    margin-top:40px;
+}
+
+#start{background:limegreen;}
+#home{background:orange;}
+</style>
 </head>
+
 <body>
 
-<div class="timer-container">
-    <div class="timer-display" id="display">00:00</div>
-    
-    <!-- +, - 5초 조절 버튼 -->
-    <div class="btn-group">
-        <button class="btn-adjust" onclick="adjustTime(-5)">- 5초</button>
-        <button class="btn-adjust" onclick="adjustTime(5)">+ 5초</button>
-    </div>
-    
-    <!-- 1분, 5분, 10분 버튼 -->
-    <div class="preset-group">
-        <button class="btn-preset" onclick="addPreset(1)">1분</button>
-        <button class="btn-preset" onclick="addPreset(5)">5분</button>
-        <button class="btn-preset" onclick="addPreset(10)">10분</button>
-    </div>
-    
-    <!-- 시작 / 정지 / 초기화 제어 버튼 -->
-    <div class="control-group">
-        <button class="btn-start" id="startPauseBtn" onclick="toggleStartPause()">시작</button>
-        <button class="btn-reset" onclick="resetTimer()">초기화</button>
-    </div>
+<div id="menu">
+<h1>😈 함정 퀴즈 게임</h1>
+<button id="start" onclick="start()">시작</button>
+</div>
+
+<div id="game" style="display:none;">
+<h2 id="question"></h2>
+<div id="choices"></div>
+<h3>점수: <span id="score">0</span></h3>
+</div>
+
+<div id="end" style="display:none;">
+<h1>🎉 끝!</h1>
+<h2>최종 점수: <span id="final"></span></h2>
+
+<h3>📌 정답 확인</h3>
+<div id="answers"></div>
+
+<button id="home" onclick="home()">처음으로</button>
 </div>
 
 <script>
-    let totalSeconds = 0;
-    let timerInterval = null;
-    let isRunning = false;
 
-    const displayElement = document.getElementById('display');
-    const startPauseBtn = document.getElementById('startPauseBtn');
+const quiz = [
+{
+q:"1 + 1 = ?",
+c:["2","11","3","창문"],
+a:0,p:10
+},
+{
+q:"대한민국 수도는?",
+c:["부산","서울","대전","인천"],
+a:1,p:10
+},
+{
+q:"물의 화학식은?",
+c:["CO2","H2O","O2","NaCl"],
+a:1,p:10
+},
+{
+q:"태양계에서 가장 큰 행성은?",
+c:["지구","목성","토성","금성"],
+a:1,p:10
+},
+{
+q:"다음 중 포유류가 아닌 것은?",
+c:["고래","박쥐","상어","사람"],
+a:2,p:20
+},
+{
+q:"사과는 어떤 과일인가?",
+c:["과일","채소","고기","정답없음"],
+a:0,p:5
+},
+{
+q:"다음 중 가장 빠른 것은?",
+c:["빛","자동차","자전거","달팽이"],
+a:0,p:15
+},
+{
+q:"2 × 5 = ?",
+c:["10","25","7","12"],
+a:0,p:10
+},
+{
+q:"대한민국 국기는?",
+c:["태극기","성조기","일장기","중국기"],
+a:0,p:10
+},
+{
+q:"다음 중 짝수는?",
+c:["3","7","9","10"],
+a:3,p:10
+},
+{
+q:"지구는 몇 개?",
+c:["1","2","3","모름"],
+a:0,p:5
+},
+{
+q:"바나나를 거꾸로 쓰면?",
+c:["나나바","banana","바나나","몰라"],
+a:0,p:20
+}
+];
 
-    function updateDisplay() {
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        displayElement.textContent = 
-            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
+let index=0;
+let score=0;
 
-    function adjustTime(amount) {
-        totalSeconds += amount;
-        if (totalSeconds < 0) totalSeconds = 0;
-        updateDisplay();
-    }
+function start(){
+index=0;
+score=0;
 
-    function addPreset(minutes) {
-        totalSeconds += minutes * 60;
-        updateDisplay();
-    }
+document.getElementById("score").innerText=0;
 
-    function toggleStartPause() {
-        if (isRunning) {
-            // 일시정지
-            clearInterval(timerInterval);
-            startPauseBtn.textContent = '시작';
-            startPauseBtn.className = 'btn-start';
-            isRunning = false;
-        } else {
-            // 시작
-            if (totalSeconds <= 0) return; // 시간이 0이면 시작 안 함
-            
-            timerInterval = setInterval(() => {
-                if (totalSeconds > 0) {
-                    totalSeconds--;
-                    updateDisplay();
-                } else {
-                    clearInterval(timerInterval);
-                    alert('타이머가 종료되었습니다!');
-                    resetTimer();
-                }
-            }, 1000);
-            
-            startPauseBtn.textContent = '일시정지';
-            startPauseBtn.className = 'btn-pause';
-            isRunning = true;
-        }
-    }
+document.getElementById("menu").style.display="none";
+document.getElementById("end").style.display="none";
+document.getElementById("game").style.display="block";
 
-    function resetTimer() {
-        clearInterval(timerInterval);
-        totalSeconds = 0;
-        isRunning = false;
-        startPauseBtn.textContent = '시작';
-        startPauseBtn.className = 'btn-start';
-        updateDisplay();
-    }
+show();
+}
 
-    // 초기 디스플레이 설정
-    updateDisplay();
+function show(){
+
+if(index>=quiz.length){
+end();
+return;
+}
+
+let q=quiz[index];
+
+document.getElementById("question").innerText=q.q;
+
+let html="";
+
+for(let i=0;i<q.c.length;i++){
+html+=`
+<button class="choice" onclick="check(${i})">
+${q.c[i]}
+</button>
+`;
+}
+
+document.getElementById("choices").innerHTML=html;
+}
+
+function check(n){
+
+if(n==quiz[index].a){
+score+=quiz[index].p;
+}
+
+document.getElementById("score").innerText=score;
+
+index++;
+show();
+}
+
+function end(){
+
+document.getElementById("game").style.display="none";
+document.getElementById("end").style.display="block";
+
+document.getElementById("final").innerText=score;
+
+let html="";
+
+for(let i=0;i<quiz.length;i++){
+html+=`
+<p>
+${i+1}. ${quiz[i].q}<br>
+👉 정답: ${quiz[i].c[quiz[i].a]}
+</p>
+<hr>
+`;
+}
+
+document.getElementById("answers").innerHTML=html;
+}
+
+function home(){
+document.getElementById("end").style.display="none";
+document.getElementById("menu").style.display="block";
+}
+
 </script>
 
 </body>
